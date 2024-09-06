@@ -1,4 +1,6 @@
 import 'package:diabetes_diary_app/pages/glucose_form.dart';
+import 'package:diabetes_diary_app/pages/insulin.dart';
+import 'package:diabetes_diary_app/pages/insulin_form.dart';
 import 'package:flutter/material.dart';
 import 'package:uicons/uicons.dart';
 import 'package:diabetes_diary_app/pages/bread_units.dart';
@@ -42,6 +44,12 @@ class HomePageContainerState extends State<HomePageContainer> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const GlucoseFormPage())
+        );
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) =>  const InsulinFormPage())
         );
         break;
     }
@@ -96,23 +104,11 @@ class HomePageContainerState extends State<HomePageContainer> {
       body: <Widget>[
         const DashboardPage(),
         glucosePage,
+        const BreadUnitsPage(),
         const InsulinPage(),
-        const BreadUnitsPage()
       ][currentView],
     );
   }
 }
-
-
-class InsulinPage extends StatelessWidget {
-
-  const InsulinPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
 
 

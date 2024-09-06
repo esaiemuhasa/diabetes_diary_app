@@ -1,10 +1,11 @@
 
 import 'package:flutter/material.dart';
 
-class BreadUnitsPage extends StatelessWidget {
-  const BreadUnitsPage({super.key});
+class InsulinPage extends StatelessWidget {
 
-  void handleClick(int index) {
+  const InsulinPage({super.key});
+
+  void handleClick (int index) {
 
   }
 
@@ -18,7 +19,7 @@ class BreadUnitsPage extends StatelessWidget {
         itemBuilder: (context, index) {
           return Card(
             child: ListTile(
-              title: Text('Bread $index'),
+              title: Text('Insulin $index'),
               subtitle: const Text("10/04/2024 a 12h 20"),
               trailing: IconButton(onPressed: () =>
               {
@@ -30,4 +31,5 @@ class BreadUnitsPage extends StatelessWidget {
       ),
     );
   }
+
 }
