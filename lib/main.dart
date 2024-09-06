@@ -1,3 +1,4 @@
+import 'package:diabetes_diary_app/pages/glucose_form.dart';
 import 'package:diabetes_diary_app/pages/home.dart';
 import 'package:flutter/material.dart';
 
@@ -16,9 +17,7 @@ class MainAppContainer extends StatelessWidget {
       title: title,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-      routes: {
-        '/' : (context) => const HomePageContainer(),
-      },
+      home: const HomePageContainer(),
     );
   }
 }

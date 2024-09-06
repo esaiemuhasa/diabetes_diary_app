@@ -1,3 +1,4 @@
+import 'package:diabetes_diary_app/pages/glucose_form.dart';
 import 'package:flutter/material.dart';
 import 'package:uicons/uicons.dart';
 import 'package:diabetes_diary_app/pages/bread_units.dart';
@@ -35,8 +36,15 @@ class HomePageContainerState extends State<HomePageContainer> {
     return "";
   }
 
-  void requireInsert () {
-
+  void requireInsert (BuildContext context) {
+    switch(currentView) {
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const GlucoseFormPage())
+        );
+        break;
+    }
   }
 
   @override
@@ -49,11 +57,11 @@ class HomePageContainerState extends State<HomePageContainer> {
         title: Row(
           children: [
             Expanded(child: Text(getTitle())),
-            currentView == 0 ? const Text("") : IconButton(
+            currentView == 0 ? const Text("") : ElevatedButton(
                 onPressed: () => {
-                  requireInsert()
+                  requireInsert(context)
                 },
-                icon: const Icon(Icons.add_circle)
+                child: const Text("New value")
             )
           ],
         ),
