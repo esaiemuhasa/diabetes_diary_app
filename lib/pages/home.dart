@@ -1,0 +1,110 @@
+import 'package:flutter/material.dart';
+import 'package:uicons/uicons.dart';
+import 'package:diabetes_diary_app/pages/bread_units.dart';
+import 'package:diabetes_diary_app/pages/dashboard.dart';
+import 'package:diabetes_diary_app/pages/glucose.dart';
+
+/// Home page widget.
+/// At top we have shortcuts of all functionality.
+/// And after we have last operations realized by user
+class HomePageContainer extends StatefulWidget {
+  const HomePageContainer({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return HomePageContainerState();
+  }
+}
+
+class HomePageContainerState extends State<HomePageContainer> {
+  int currentView = 0;
+
+  GlucosePage glucosePage = const GlucosePage();
+
+  String getTitle () {
+    switch (currentView) {
+      case 0:
+        return "Dashboard";
+      case 1:
+        return glucosePage.getTitle();
+      case 2:
+        return "Bread units";
+      case 3:
+        return "Insulin";
+    }
+    return "";
+  }
+
+  void requireInsert () {
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: theme.appBarTheme.shadowColor,
+        title: Row(
+          children: [
+            Expanded(child: Text(getTitle())),
+            currentView == 0 ? const Text("") : IconButton(
+                onPressed: () => {
+                  requireInsert()
+                },
+                icon: const Icon(Icons.add_circle)
+            )
+          ],
+        ),
+      ),
+      bottomNavigationBar: NavigationBar(
+        destinations: <Widget>[
+          const NavigationDestination(
+            icon: Icon(Icons.bar_chart_rounded),
+            label: 'Dashboard',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.bloodtype_outlined),
+            label: 'Glucose',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.fastfood_outlined),
+            label: 'Bread units',
+          ),
+          NavigationDestination(
+            icon: Icon(UIcons.regularStraight.medicine),
+            label: 'Insulin',
+          ),
+        ],
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentView = index;
+          });
+        },
+        indicatorColor: Colors.black12,
+        selectedIndex: currentView,
+      ),
+      body: <Widget>[
+        const DashboardPage(),
+        glucosePage,
+        const InsulinPage(),
+        const BreadUnitsPage()
+      ][currentView],
+    );
+  }
+}
+
+
+class InsulinPage extends StatelessWidget {
+
+  const InsulinPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+
+
