@@ -9,6 +9,14 @@ class InsulinPage extends StatelessWidget {
 
   }
 
+  String getCaption () {
+    return "Insulin";
+  }
+
+  String getAddingDataButtonCaption () {
+    return "New insulin";
+  }
+
   @override
   Widget build(BuildContext context) {
 

@@ -8,6 +8,14 @@ class GlucosePage extends StatelessWidget {
     return "Glucose";
   }
 
+  String getCaption () {
+    return "Glucose";
+  }
+
+  String getAddingDataButtonCaption () {
+    return "New glucose";
+  }
+
   void handleClick (int index) {
   }
 

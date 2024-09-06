@@ -8,6 +8,14 @@ class BreadUnitsPage extends StatelessWidget {
 
   }
 
+  String getCaption () {
+    return "Bread units";
+  }
+
+  String getAddingDataButtonCaption () {
+    return "New bread";
+  }
+
   @override
   Widget build(BuildContext context) {
 

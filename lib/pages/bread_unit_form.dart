@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
 
-class InsulinFormPage extends StatelessWidget {
+class BreadUnitFormPage extends StatelessWidget {
 
-  const InsulinFormPage({super.key});
+  const BreadUnitFormPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class InsulinFormPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: theme.appBarTheme.shadowColor,
-        title: const Text("Insert insulin"),
+        title: const Text("New bread"),
       ),
       body: const Padding(
         padding: EdgeInsets.all(20),
@@ -61,7 +61,7 @@ class FormContainerState extends State<FormContainer> {
                 child: TextField(
                   decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "Quantity (in IU)"
+                      hintText: "Portion"
                   ),
                 ),
               ),
@@ -82,6 +82,20 @@ class FormContainerState extends State<FormContainer> {
               )
             ],
           )
+        ),
+
+        const Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 0
+            ),
+            child: TextField(
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  enabled: false,
+                  hintText: ""
+              ),
+            )
         ),
 
         const Padding(

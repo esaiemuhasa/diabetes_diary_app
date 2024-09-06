@@ -1,3 +1,4 @@
+import 'package:diabetes_diary_app/pages/bread_unit_form.dart';
 import 'package:diabetes_diary_app/pages/glucose_form.dart';
 import 'package:diabetes_diary_app/pages/insulin.dart';
 import 'package:diabetes_diary_app/pages/insulin_form.dart';
@@ -23,17 +24,31 @@ class HomePageContainerState extends State<HomePageContainer> {
   int currentView = 0;
 
   GlucosePage glucosePage = const GlucosePage();
+  InsulinPage insulinPage = const InsulinPage();
+  BreadUnitsPage breadUnitsPage = const BreadUnitsPage();
 
   String getTitle () {
     switch (currentView) {
       case 0:
         return "Dashboard";
       case 1:
-        return glucosePage.getTitle();
+        return glucosePage.getCaption();
       case 2:
-        return "Bread units";
+        return breadUnitsPage.getCaption();
       case 3:
-        return "Insulin";
+        return insulinPage.getCaption();
+    }
+    return "";
+  }
+
+  String getButtonCaption () {
+    switch (currentView) {
+      case 1:
+        return glucosePage.getAddingDataButtonCaption();
+      case 2:
+        return breadUnitsPage.getAddingDataButtonCaption();
+      case 3:
+        return insulinPage.getAddingDataButtonCaption();
     }
     return "";
   }
@@ -44,6 +59,12 @@ class HomePageContainerState extends State<HomePageContainer> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const GlucoseFormPage())
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const BreadUnitFormPage())
         );
         break;
       case 3:
@@ -69,7 +90,7 @@ class HomePageContainerState extends State<HomePageContainer> {
                 onPressed: () => {
                   requireInsert(context)
                 },
-                child: const Text("New value")
+                child: Text(getButtonCaption())
             )
           ],
         ),
@@ -104,8 +125,8 @@ class HomePageContainerState extends State<HomePageContainer> {
       body: <Widget>[
         const DashboardPage(),
         glucosePage,
-        const BreadUnitsPage(),
-        const InsulinPage(),
+        breadUnitsPage,
+        insulinPage,
       ][currentView],
     );
   }
