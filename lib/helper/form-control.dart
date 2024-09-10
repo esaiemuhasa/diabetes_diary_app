@@ -56,12 +56,12 @@ class SimpleDateChooserState extends State<SimpleDateChooser> {
     );
 
     date.then((selectedDate) {
+      final DateTime now = selectedDate ?? currentDate ?? DateTime.now();
+      currentDate = now;
       setState(() {
-        final DateTime now = selectedDate ?? currentDate ?? DateTime.now();
-        currentDate = now;
         currentDateController.value = TextEditingValue(text: "${now.month}/${now.day}/${now.year}");
-        listener.call(currentDate);
       });
+      listener.call(now);
     } );
   }
 

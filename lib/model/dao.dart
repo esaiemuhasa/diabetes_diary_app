@@ -246,6 +246,21 @@ class ManagedParametersRepository<T>  extends IdentifiableEntityRepository<T> {
 
 class GlucoseRepository extends ManagedParametersRepository<Glucose>{
 
+  static GlucoseRepository? instance;
+
+  GlucoseRepository() {
+    init();
+  }
+
+  static GlucoseRepository getInstance () {
+    GlucoseRepository.instance ??= GlucoseRepository();
+    GlucoseRepository? check = instance;
+    if (check == null) {
+      throw Exception("Never");
+    }
+    return check;
+  }
+
   @override
   String getTableName () {
     return "glucose";

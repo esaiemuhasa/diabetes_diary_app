@@ -1,4 +1,7 @@
 
+import 'package:diabetes_diary_app/helper/form-control.dart';
+import 'package:diabetes_diary_app/model/bean.dart';
+import 'package:diabetes_diary_app/model/dao.dart';
 import 'package:flutter/material.dart';
 
 class GlucoseFormPage extends StatelessWidget {
@@ -24,21 +27,49 @@ class GlucoseFormPage extends StatelessWidget {
 }
 
 
-class FormContainer extends StatelessWidget {
-
+class FormContainer extends StatefulWidget {
+  
   const FormContainer({super.key});
 
   @override
+  State<FormContainer> createState() => FormContainerState();
+}
+
+class FormContainerState extends State<FormContainer> {
+
+  GlucoseRepository repository = GlucoseRepository.getInstance();
+
+  DateTime selectedDate = DateTime.now();
+  TimeOfDay selectedTime = TimeOfDay.now();
+  String takenValue = "";
+
+  void handlePersist (BuildContext context) {
+    Glucose data = Glucose(
+      takenValue: double.parse(takenValue),
+      dayDate: "${selectedDate.month}/${selectedDate.day}/${selectedDate.year} at ${selectedTime.hour}:${selectedTime.minute}"
+    );
+
+    repository.create(data).then((data) {
+      Navigator.pop(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             vertical: 10,
             horizontal: 0
           ),
           child: TextField(
-            decoration: InputDecoration(
+            onChanged: (value) {
+              setState(() {
+                takenValue = value;
+              });
+            },
+            decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: "Enter value in mmoll/dl"
             ),
@@ -46,51 +77,40 @@ class FormContainer extends StatelessWidget {
         ),
 
         Padding(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
                 vertical: 10,
                 horizontal: 0
             ),
-            child: Row(
-              children: [
-                Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Date"
-                      ),
-                    )
-                ),
-                IconButton(onPressed: null, icon: Icon(Icons.calendar_month_outlined))
-              ],
-            )
+            child: SimpleDateChooser(listener: (DateTime date) {
+              setState(() {
+                selectedDate = date;
+              });
+            })
         ),
 
         Padding(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
               vertical: 10,
               horizontal: 0
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Time"
-                  ),
-                )
-              ),
-              IconButton(onPressed: null, icon: Icon(Icons.access_time_rounded))
-            ],
-          )
+          child: SimpleTimeChooser(listener: (TimeOfDay time) {
+            setState(() {
+              selectedTime = time;
+            });
+          })
         ),
 
         Padding(
-          padding: EdgeInsets.symmetric( vertical: 10, horizontal: 0),
+          padding: const EdgeInsets.symmetric( vertical: 10, horizontal: 0),
           child: Row(
             children: [
               Expanded(
-                child: ElevatedButton(onPressed: null, child: Text("Save")),
+                child: ElevatedButton(
+                  onPressed: takenValue.isEmpty ? null : () {
+                    handlePersist(context);
+                  },
+                  child: const Text("Save")
+                ),
               ),
             ],
           )

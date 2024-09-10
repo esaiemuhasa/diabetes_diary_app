@@ -11,7 +11,12 @@ class ManagedParameters extends IdentifiableEntity {
 
 /// Description of measured glucose
 class Glucose extends ManagedParameters {
-  double? takenValue;
+  double takenValue;
+
+  Glucose({int id = 0, this.takenValue = 0, String dayDate = ""}) {
+    this.id = id;
+    this.dayDate = dayDate;
+  }
 }
 
 /// Description of injected insulin
