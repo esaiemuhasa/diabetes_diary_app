@@ -74,6 +74,9 @@ class FormContainerState extends State<FormContainer> {
 
   /// Save data in database
   void handlePersist (BuildContext context) {
+    if (dropdownValue == null) {
+      throw Exception("Error ");
+    }
     Insulin insulin = Insulin(
       injectedQuantity: double.parse(tapedQuantity),
       type: dropdownValue,

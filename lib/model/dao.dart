@@ -66,15 +66,32 @@ class IdentifiableEntityRepository <T> {
 
   /// Find occurrence by ID in table in database
   Future<T?> find (int id) async {
+    final db = await getDatabase();
 
-    return null;
+    final List<Map<String, Object?>> maps = await db.query(
+      getTableName(),
+      where: "id = ?",
+      whereArgs: [id]
+    );
+
+    List<T> items  = <T> [
+      for (final item in maps)
+        await mapping(item)
+    ];
+
+    return items.isEmpty ? null : items[0];
   }
 
   /// find all data in table in our database
   Future<List<T>> findAll ({int limit = 0, int offset = 0}) async {
     final db = await getDatabase();
 
-    final List<Map<String, Object?>> maps = await db.query(getTableName(), limit: limit != 0 ? limit : 20, offset: offset);
+    final List<Map<String, Object?>> maps = await db.query(
+        getTableName(),
+        orderBy: "id DESC",
+        limit: limit != 0 ? limit : 20,
+        offset: offset
+    );
 
     return <T> [
       for (final item in maps)
@@ -186,6 +203,7 @@ class InsulinRepository extends ManagedParametersRepository<Insulin> {
     return Insulin(
       id: data["id"] as int,
       injectedQuantity: data["injected_quantity"] as double,
+      dayDate: data["day_date"] as String,
       type: await typeRepository.find(data["type_id"] as int)
     );
   }

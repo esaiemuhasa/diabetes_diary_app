@@ -1,13 +1,12 @@
 
+import 'package:diabetes_diary_app/model/bean.dart';
+import 'package:diabetes_diary_app/model/dao.dart';
 import 'package:flutter/material.dart';
 
-class InsulinPage extends StatelessWidget {
+class InsulinPage extends StatefulWidget {
+
 
   const InsulinPage({super.key});
-
-  void handleClick (int index) {
-
-  }
 
   String getCaption () {
     return "Insulin";
@@ -18,24 +17,62 @@ class InsulinPage extends StatelessWidget {
   }
 
   @override
+  State<InsulinPage> createState() => InsulinPageState();
+}
+
+class InsulinPageState extends State<InsulinPage> {
+  InsulinRepository repository = InsulinRepository.getInstance();
+  List<Insulin> list = <Insulin>[];
+
+  @override
+  void initState() {
+    super.initState();
+    repository.findAll()
+    .then((items) {
+      setState(() {
+        list.addAll(items);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     return Padding(
       padding: const EdgeInsets.all(10),
       child: ListView.builder(
-        itemCount: 20,
+        itemCount: list.length,
         itemBuilder: (context, index) {
-          return Card(
-            child: ListTile(
-              title: Text('Insulin $index'),
-              subtitle: const Text("10/04/2024 a 12h 20"),
-              trailing: IconButton(onPressed: () =>
-              {
-                handleClick(index)
-              }, icon: const Icon(Icons.more_vert)),
-            ),
-          );
+          return ItemCard(insulin: list[index]);
         },
+      ),
+    );
+  }
+}
+
+
+class ItemCard extends StatelessWidget {
+
+  final Insulin insulin;
+
+  const ItemCard({super.key, required this.insulin});
+
+  void handleClick () {
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String? date = insulin.dayDate;
+    date ??= "";
+    return Card(
+      child: ListTile(
+        title: Text("${insulin.injectedQuantity} IU,  ${insulin.type!.name}"),
+        subtitle: Text(date),
+        trailing: IconButton(onPressed: () =>
+        {
+          handleClick()
+        }, icon: const Icon(Icons.more_vert)),
       ),
     );
   }
