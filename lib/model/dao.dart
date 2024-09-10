@@ -45,7 +45,7 @@ class IdentifiableEntityRepository <T> {
           db.execute("INSERT INTO bread_config(name, carbohydrate_per_serving) VALUES('Bread', 2)");
           db.execute("INSERT INTO bread_config(name, carbohydrate_per_serving) VALUES('Milk', 10)");
         },
-        version: 1
+        version: 2
     );
   }
 
@@ -211,6 +211,21 @@ class InsulinRepository extends ManagedParametersRepository<Insulin> {
 
 class BreadConfigRepository extends IdentifiableEntityRepository<BreadConfig> {
 
+  static BreadConfigRepository? instance;
+
+  BreadConfigRepository () {
+    init();
+  }
+
+  static BreadConfigRepository getInstance () {
+    BreadConfigRepository.instance ??= BreadConfigRepository();
+    BreadConfigRepository? check = instance;
+    if (check == null) {
+      throw Exception("never");
+    }
+    return check;
+  }
+
   @override
   String getTableName () {
     return "bread_config";
@@ -222,6 +237,56 @@ class BreadConfigRepository extends IdentifiableEntityRepository<BreadConfig> {
       id: data["id"] as int,
       name: data["name"] as String,
       carbohydratePerServing: data["carbohydrate_per_serving"] as double
+    );
+  }
+}
+
+class BreadUnitRepository extends ManagedParametersRepository<BreadUnit> {
+
+  static BreadUnitRepository? instance;
+
+  BreadConfigRepository configRepository = BreadConfigRepository.getInstance();
+
+  BreadUnitRepository () {
+    init();
+  }
+
+  static BreadUnitRepository getInstance () {
+    BreadUnitRepository.instance ??= BreadUnitRepository();
+    BreadUnitRepository? check = instance;
+    if (check == null) {
+      throw Exception("never");
+    }
+    return check;
+  }
+
+  @override
+  Future<BreadUnit> create(BreadUnit data) async {
+    final db = await getDatabase();
+
+    await db.insert(
+        getTableName(),
+        {
+          "serving": data.serving,
+          "day_date": data.dayDate,
+          "bread_id": data.bread!.id
+        }
+    );
+    return data;
+  }
+
+  @override
+  String getTableName() {
+    return "bread_unit";
+  }
+
+  @override
+  Future<BreadUnit> mapping(Map<String, Object?> data) async {
+    return BreadUnit(
+      id: data["id"] as int,
+      dayDate: data["day_date"] as String,
+      serving: data["serving"] as double,
+      bread: await configRepository.find(data["bread_id"] as int)
     );
   }
 }

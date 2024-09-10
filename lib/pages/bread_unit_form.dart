@@ -1,4 +1,7 @@
 
+import 'package:diabetes_diary_app/helper/form-control.dart';
+import 'package:diabetes_diary_app/model/bean.dart';
+import 'package:diabetes_diary_app/model/dao.dart';
 import 'package:flutter/material.dart';
 
 class BreadUnitFormPage extends StatelessWidget {
@@ -34,16 +37,55 @@ class FormContainer extends StatefulWidget {
 
 }
 
-
 class FormContainerState extends State<FormContainer> {
 
-  List<String> list = <String>['One', 'Two', 'Three', 'Four'];
-  String? dropdownValue;
+  BreadConfigRepository configRepository = BreadConfigRepository.getInstance();
+  BreadUnitRepository repository = BreadUnitRepository.getInstance();
+
+  List<BreadConfig> list = <BreadConfig>[];
+  BreadConfig? selectedBread;
+  String portionValue = "";
+  DateTime currentDate = DateTime.now();
+  TimeOfDay currentTime = TimeOfDay.now();
+  String calculatedCarbohydrate = "";
+  TextEditingController calculatedCarbohydrateController = TextEditingController(text: "");
 
   @override
   void initState() {
     super.initState();
-    dropdownValue = list.first;
+    configRepository.findAll().then((items) {
+      setState(() {
+        list.addAll(items);
+        selectedBread = list.first;
+      });
+    });
+  }
+
+  void revalidateCalculated () {
+    BreadConfig? config = selectedBread;
+    if (config == null || portionValue.isEmpty) {
+      calculatedCarbohydrateController.value = const TextEditingValue(text: "");
+      return;
+    }
+
+    double value = double.parse(portionValue) * config.carbohydratePerServing;
+    calculatedCarbohydrateController.value = TextEditingValue(text: value.toString());
+  }
+
+  void handlePersist (BuildContext context) {
+    BreadUnit unit = BreadUnit(
+      serving: double.parse(portionValue),
+      bread: selectedBread,
+      dayDate: "${currentDate.month}/${currentDate.day}/${currentDate.year} at ${currentTime.hour}:${currentTime.minute}"
+    );
+
+    print("Bread config ${selectedBread!.name} ==== ${selectedBread!.id}");
+
+    repository.create(unit).then((data) {
+      Navigator.pop(context);
+    }).catchError((error) {
+      print("Error : ${error.toString()}");
+    });
   }
 
   @override
@@ -51,99 +93,86 @@ class FormContainerState extends State<FormContainer> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 0
-          ),
-          child: Row(
-            children: [
-              const Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Portion"
-                  ),
-                ),
-              ),
-              DropdownMenu<String>(
-                initialSelection: dropdownValue,
-                onSelected: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    dropdownValue = value!;
-                  });
-                },
-                dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
-                  return DropdownMenuEntry<String>(
-                      value: value,
-                      label: value
-                  );
-                }).toList(),
-              )
-            ],
-          )
+            padding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 0
+            ),
+            child: DropdownMenu<BreadConfig>(
+              initialSelection: selectedBread,
+              expandedInsets: EdgeInsets.zero,
+              onSelected: (BreadConfig? value) {
+                setState(() {
+                  selectedBread = value;
+                  revalidateCalculated();
+                });
+              },
+              dropdownMenuEntries: list.map<DropdownMenuEntry<BreadConfig>>((BreadConfig value) {
+                return DropdownMenuEntry<BreadConfig>(
+                    value: value,
+                    label: value.toString()
+                );
+              }).toList(),
+            )
         ),
 
-        const Padding(
-            padding: EdgeInsets.symmetric(
+        Padding(
+            padding: const EdgeInsets.symmetric(
                 vertical: 10,
                 horizontal: 0
             ),
             child: TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Portion"
+              ),
+              onChanged: (value) {
+                setState(() {
+                  portionValue = value;
+                  revalidateCalculated();
+                });
+              },
+            )
+        ),
+
+        Padding(
+            padding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 0
+            ),
+            child: TextField(
+              decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   enabled: false,
                   hintText: ""
               ),
+              controller: calculatedCarbohydrateController,
             )
         ),
 
-        const Padding(
-            padding: EdgeInsets.symmetric(
+        Padding(
+            padding: const EdgeInsets.symmetric(
                 vertical: 10,
                 horizontal: 0
             ),
-            child: Row(
-              children: [
-                Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Date"
-                      ),
-                    )
-                ),
-                IconButton(onPressed: null, icon: Icon(Icons.calendar_month_outlined))
-              ],
-            )
+            child: SimpleDateChooser(listener: (DateTime date) {})
         ),
 
-        const Padding(
-          padding: EdgeInsets.symmetric(
+        Padding(
+          padding: const EdgeInsets.symmetric(
               vertical: 10,
               horizontal: 0
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Time"
-                  ),
-                )
-              ),
-              IconButton(onPressed: null, icon: Icon(Icons.access_time_rounded))
-            ],
-          )
+          child: SimpleTimeChooser(listener: (TimeOfDay time) {})
         ),
 
-        const Padding(
-          padding: EdgeInsets.symmetric( vertical: 10, horizontal: 0),
+        Padding(
+          padding: const EdgeInsets.symmetric( vertical: 10, horizontal: 0),
           child: Row(
             children: [
               Expanded(
-                child: ElevatedButton(onPressed: null, child: Text("Save")),
+                child: ElevatedButton(onPressed: portionValue.isEmpty ? null : () => {
+                  handlePersist(context)
+                }, child: const Text("Save")),
               ),
             ],
           )

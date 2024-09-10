@@ -32,8 +32,13 @@ class Insulin extends ManagedParameters {
 
 /// Description of taken bread
 class BreadUnit extends ManagedParameters {
-  double? serving;
+  double serving;
   BreadConfig? bread;
+
+  BreadUnit({int id = 0, String dayDate = "", this.serving = 0, this.bread}) {
+    this.id = id;
+    this.dayDate = dayDate;
+  }
 }
 
 /// Configuration of usable insulin
@@ -54,5 +59,12 @@ class BreadConfig extends IdentifiableEntity {
   String name;
   double carbohydratePerServing;
 
-  BreadConfig({int id = 0, this.name = "", this.carbohydratePerServing = 0.0});
+  BreadConfig({int id = 0, this.name = "", this.carbohydratePerServing = 0.0}) {
+    this.id = id;
+  }
+
+  @override
+  String toString() {
+    return name;
+  }
 }

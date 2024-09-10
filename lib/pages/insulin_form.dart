@@ -46,7 +46,7 @@ class FormContainerState extends State<FormContainer> {
   final InsulinRepository repository = InsulinRepository.getInstance();
   List<InsulinType> list = <InsulinType>[];
 
-  InsulinType? dropdownValue;
+  InsulinType? selectedInsulin;
   DateTime? currentDate;
   TimeOfDay? currentTime;
   String tapedQuantity = "";
@@ -59,7 +59,7 @@ class FormContainerState extends State<FormContainer> {
       setState(() {
         list.clear();
         list.addAll(items);
-        dropdownValue = list.first;
+        selectedInsulin = list.first;
       });
     }).catchError((error) {
       if (kDebugMode) {
@@ -74,12 +74,12 @@ class FormContainerState extends State<FormContainer> {
 
   /// Save data in database
   void handlePersist (BuildContext context) {
-    if (dropdownValue == null) {
+    if (selectedInsulin == null) {
       throw Exception("Error ");
     }
     Insulin insulin = Insulin(
       injectedQuantity: double.parse(tapedQuantity),
-      type: dropdownValue,
+      type: selectedInsulin,
       dayDate: "${currentDate!.month}/${currentDate!.day}/${currentDate!.year} at ${currentTime!.hour}:${currentTime!.minute}"
     );
 
@@ -102,12 +102,12 @@ class FormContainerState extends State<FormContainer> {
                 horizontal: 0
             ),
           child: DropdownMenu<InsulinType>(
-            initialSelection: dropdownValue,
+            initialSelection: selectedInsulin,
             expandedInsets: EdgeInsets.zero,
             onSelected: (InsulinType? value) {
               // This is called when the user selects an item.
               setState(() {
-                dropdownValue = value;
+                selectedInsulin = value;
               });
             },
             dropdownMenuEntries: list.map<DropdownMenuEntry<InsulinType>>((InsulinType value) {
