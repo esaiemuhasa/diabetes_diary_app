@@ -1,4 +1,9 @@
 
+import 'dart:async';
+import 'package:diabetes_diary_app/helper/form-control.dart';
+import 'package:diabetes_diary_app/model/bean.dart';
+import 'package:diabetes_diary_app/model/dao.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class InsulinFormPage extends StatelessWidget {
@@ -37,13 +42,51 @@ class FormContainer extends StatefulWidget {
 
 class FormContainerState extends State<FormContainer> {
 
-  List<String> list = <String>['One', 'Two', 'Three', 'Four'];
-  String? dropdownValue;
+  final InsulinTypeRepository typeRepository = InsulinTypeRepository.getInstance();
+  final InsulinRepository repository = InsulinRepository.getInstance();
+  List<InsulinType> list = <InsulinType>[];
+
+  InsulinType? dropdownValue;
+  DateTime? currentDate;
+  TimeOfDay? currentTime;
+  String tapedQuantity = "";
 
   @override
   void initState() {
     super.initState();
-    dropdownValue = list.first;
+    Future<List<InsulinType>> data = typeRepository.findAll();
+    data.then((items) {
+      setState(() {
+        list.clear();
+        list.addAll(items);
+        dropdownValue = list.first;
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print("Error occurred in loading data process ${error.toString()}");
+      }
+    });
+
+    DateTime now = DateTime.now();
+    currentTime = TimeOfDay(hour: now.hour, minute: now.minute);
+    currentDate = now;
+  }
+
+  /// Save data in database
+  void handlePersist (BuildContext context) {
+    Insulin insulin = Insulin(
+      injectedQuantity: double.parse(tapedQuantity),
+      type: dropdownValue,
+      dayDate: "${currentDate!.month}/${currentDate!.day}/${currentDate!.year} at ${currentTime!.hour}:${currentTime!.minute}"
+    );
+
+    repository.create(insulin).then((data) {
+      Navigator.pop(context);
+    }).catchError((error) {
+      if (kDebugMode) {
+        print("Error ${error.toString()}");
+      }
+    });
   }
 
   @override
@@ -51,85 +94,81 @@ class FormContainerState extends State<FormContainer> {
     return Column(
       children: [
         Padding(
+            padding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 0
+            ),
+          child: DropdownMenu<InsulinType>(
+            initialSelection: dropdownValue,
+            expandedInsets: EdgeInsets.zero,
+            onSelected: (InsulinType? value) {
+              // This is called when the user selects an item.
+              setState(() {
+                dropdownValue = value;
+              });
+            },
+            dropdownMenuEntries: list.map<DropdownMenuEntry<InsulinType>>((InsulinType value) {
+              return DropdownMenuEntry<InsulinType>(
+                  value: value,
+                  label: value.toString()
+              );
+            }).toList(),
+          )
+        ),
+
+        Padding(
           padding: const EdgeInsets.symmetric(
               vertical: 10,
               horizontal: 0
           ),
-          child: Row(
-            children: [
-              const Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Quantity (in IU)"
-                  ),
-                ),
-              ),
-              DropdownMenu<String>(
-                initialSelection: dropdownValue,
-                onSelected: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    dropdownValue = value!;
-                  });
-                },
-                dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
-                  return DropdownMenuEntry<String>(
-                      value: value,
-                      label: value
-                  );
-                }).toList(),
-              )
-            ],
+          child: TextField(
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Quantity (in IU)",
+            ),
+            onChanged: (value) {
+              setState(() {
+                tapedQuantity = value;
+              });
+            },
           )
         ),
 
-        const Padding(
-            padding: EdgeInsets.symmetric(
+        Padding(
+            padding: const EdgeInsets.symmetric(
                 vertical: 10,
                 horizontal: 0
             ),
-            child: Row(
-              children: [
-                Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Date"
-                      ),
-                    )
-                ),
-                IconButton(onPressed: null, icon: Icon(Icons.calendar_month_outlined))
-              ],
-            )
+            child: SimpleDateChooser(listener: (DateTime date) {
+              setState(() {
+                currentDate = date;
+              });
+            })
         ),
 
-        const Padding(
-          padding: EdgeInsets.symmetric(
+        Padding(
+          padding: const EdgeInsets.symmetric(
               vertical: 10,
               horizontal: 0
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Time"
-                  ),
-                )
-              ),
-              IconButton(onPressed: null, icon: Icon(Icons.access_time_rounded))
-            ],
-          )
+          child: SimpleTimeChooser(listener: (TimeOfDay time) {
+            setState(() {
+              currentTime = time;
+            });
+          })
         ),
 
-        const Padding(
-          padding: EdgeInsets.symmetric( vertical: 10, horizontal: 0),
+        Padding(
+          padding: const EdgeInsets.symmetric( vertical: 10, horizontal: 0),
           child: Row(
             children: [
               Expanded(
-                child: ElevatedButton(onPressed: null, child: Text("Save")),
+                child: ElevatedButton(
+                  onPressed: tapedQuantity.trim().isEmpty ? null : () {
+                    handlePersist(context);
+                  },
+                  child: const Text("Save"),
+                ),
               ),
             ],
           )
