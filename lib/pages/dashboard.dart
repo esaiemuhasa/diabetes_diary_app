@@ -35,7 +35,7 @@ class LineChartWidget extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Text(
-              "Glucose chart",
+              "Blood sugar chart",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 16,
@@ -69,6 +69,10 @@ class _LineChartContainerState extends State<LineChartContainer> {
 
   GlucoseRepository repository = GlucoseRepository.getInstance();
   List<FlSpot> dataList = [];
+  double maxX = 1;
+  double maxY = 1;
+  double minX = 0;
+  double minY = 0;
 
   @override
   void initState() {
@@ -76,13 +80,28 @@ class _LineChartContainerState extends State<LineChartContainer> {
 
     repository.findAll().then((items) => {
       setState(() {
+        List<FlSpot> spots = [];
+        minY = items[0].takenValue;
         for(var i = items.length-1; i>=0 ; i -= 1) {
           Glucose cl = items[i];
           double x = items.length - 1.0 - i;
-          print("X = ${x}");
+
+          if (cl.takenValue > maxY) {
+            maxY = cl.takenValue;
+          }
+
+          if (cl.takenValue < minY) {
+            minY = cl.takenValue;
+          }
+
           var item = FlSpot(x, cl.takenValue);
-          dataList.add(item);
+          spots.add(item);
         }
+
+        maxX = items.length + 0.0;
+        maxY += 5;
+
+        dataList.addAll(spots);
       })
     });
   }
@@ -109,10 +128,10 @@ class _LineChartContainerState extends State<LineChartContainer> {
               spots: dataList,
             )
           ],
-          minX: 0,
-          maxX: 20,
-          minY: 0,
-          maxY: 11,
+          minX: minX,
+          maxX: maxX,
+          minY: minY,
+          maxY: maxY,
         )
     );
   }
@@ -120,8 +139,8 @@ class _LineChartContainerState extends State<LineChartContainer> {
   FlGridData gridData() => FlGridData(
     show: true,
     drawVerticalLine: true,
-    horizontalInterval: 1.5,
-    verticalInterval: 1.5,
+    horizontalInterval: maxY > 25 ? 25 : 1,
+    verticalInterval: 1,
     getDrawingHorizontalLine: (double _) => FlLine(
       color: Colors.blue.withOpacity(0.15),
       strokeWidth: 1,
@@ -149,38 +168,40 @@ class _LineChartContainerState extends State<LineChartContainer> {
 
   SideTitles bottomTitles() => SideTitles(
     getTitlesWidget: bottomTitleWidgets,
-    interval: 2,
+    interval: maxX / 10.0,
     reservedSize: 35,
-    showTitles: true,
+    showTitles: false,
   );
 
   SideTitleWidget bottomTitleWidgets(double value, TitleMeta meta) {
-    String text = switch (value.toInt()) {
-      0 => '',
-      1 => '',
-      2 => '',
-      3 => '',
-      4 => '',
-      5 => '',
-      6 => '',
-      7 => '',
-      8 => '',
-      9 => '',
-      10 => '',
-      11 => '',
-      12 => '',
-      _ => '',
+    String text = switch (value) {
+      0 => '0',
+      1 => '1',
+      2 => '2',
+      3 => '3',
+      4 => '4',
+      5 => '5',
+      6 => '6',
+      7 => '7',
+      8 => '8',
+      9 => '9',
+      10 => '10',
+      11 => '11',
+      12 => '12',
+      13 => '13',
+      14 => '14',
+      _ => "$value",
     };
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      space: 10,
+      space: 8,
       child: Text(
         text,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: Colors.white,
+          fontSize: 14,
+          color: Colors.black26,
         ),
       ),
     );
@@ -188,31 +209,30 @@ class _LineChartContainerState extends State<LineChartContainer> {
 
   SideTitles leftTitles() => SideTitles(
     getTitlesWidget: leftTitleWidgets,
-    interval: 1,
+    interval: maxY / 10,
     reservedSize: 40,
     showTitles: true,
   );
 
   Text leftTitleWidgets(double value, TitleMeta meta) {
-    String text = switch (value.toInt()) {
-      1 => '50',
-      2 => '100',
-      3 => '150',
-      4 => '200',
-      5 => '250',
-      6 => '300',
-      7 => '350',
-      8 => '400',
-      9 => '450',
-      10 => '500',
-      _ => '',
+    String text = switch (value) {
+      50 => '50',
+      100 => '100',
+      150 => '150',
+      200 => '200',
+      250 => '250',
+      300 => '300',
+      350 => '350',
+      400 => '400',
+      450 => '450',
+      500 => '500',
+      _ => '$value',
     };
 
     return Text(
       text,
       textAlign: TextAlign.center,
-      style: const TextStyle(
-          fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black26),
     );
   }
 
@@ -230,15 +250,4 @@ class _LineChartContainerState extends State<LineChartContainer> {
   );
 
 
-  LineChartBarData lineChartBarDataCurrentWeek() => LineChartBarData(
-    isCurved: true,
-    curveSmoothness: 0,
-    color: const Color(0xFF50E4FF),
-    barWidth: 2,
-    isStrokeCapRound: true,
-    dotData: const FlDotData(show: true),
-    belowBarData: BarAreaData(show: false),
-
-    spots: dataList,
-  );
 }
