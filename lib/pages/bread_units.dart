@@ -1,12 +1,12 @@
 
+import 'package:diabetes_diary_app/model/bean.dart';
+import 'package:diabetes_diary_app/model/dao.dart';
 import 'package:flutter/material.dart';
 
-class BreadUnitsPage extends StatelessWidget {
+class BreadUnitsPage extends StatefulWidget {
+  
+
   const BreadUnitsPage({super.key});
-
-  void handleClick(int index) {
-
-  }
 
   String getCaption () {
     return "Bread units";
@@ -15,6 +15,25 @@ class BreadUnitsPage extends StatelessWidget {
   String getAddingDataButtonCaption () {
     return "New bread";
   }
+  @override
+  State<BreadUnitsPage> createState() => BreadUnitsPageState();
+}
+
+class BreadUnitsPageState extends State<BreadUnitsPage> {
+
+  BreadUnitRepository repository = BreadUnitRepository.getInstance();
+  List<BreadUnit> units = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    repository.findAll().then((items) {
+      setState(() {
+        units.addAll(items);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,20 +41,48 @@ class BreadUnitsPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: ListView.builder(
-        itemCount: 20,
+        itemCount: units.length,
         itemBuilder: (context, index) {
-          return Card(
-            child: ListTile(
-              title: Text('Bread $index'),
-              subtitle: const Text("10/04/2024 a 12h 20"),
-              trailing: IconButton(onPressed: () =>
-              {
-                handleClick(index)
-              }, icon: const Icon(Icons.more_vert)),
-            ),
-          );
+          return BreadUnitCard(unit: units[index]);
         },
       ),
     );
   }
+}
+
+///
+class BreadUnitCard extends StatelessWidget {
+  final BreadUnit unit;
+  const BreadUnitCard({super.key, required this.unit});
+  
+  void handleClick () {}
+
+  @override
+  Widget build(BuildContext context) {
+    String date = unit.dayDate ?? "";
+    
+    return Card(
+      child: ListTile(
+        title: Text(unit.bread!.name),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("${unit.serving} portion  "),
+                Text("( ${unit.serving * unit.bread!.carbohydratePerServing} Carbohydrate)")
+              ],
+            ),
+            Text(date),
+          ],
+        ),
+        trailing: IconButton(onPressed: () =>
+        {
+          handleClick()
+        }, icon: const Icon(Icons.more_vert)),
+      ),
+    );
+  }
+  
 }
