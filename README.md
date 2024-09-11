@@ -14,15 +14,23 @@ The app is developed from the patient's perspective. The app support one user (p
 ## App result presentation (Screenshots)
 ### Dashboard
 on the dashboard we have the blood sugar graph.
+![Screenshot_20240911_132415](https://github.com/user-attachments/assets/38eacfea-b7d4-4ab3-9df7-9c47a2e044ef)
+
 
 ### Glucose
 View blood glucose sampling history, with the possibility of adding more.
+![Screenshot_20240911_132437](https://github.com/user-attachments/assets/a81ba017-1048-40c3-a329-1c9a11b61c3b)
+
 
 ### Bread units
 View meal history, with the ability to add more.
+![Screenshot_20240911_132454](https://github.com/user-attachments/assets/9f5d2d46-9d0e-4893-b681-a0da3282c4ba)
+
 
 ### Insulin
 View insulin injection history, with the option to add more.
+![Screenshot_20240911_132509](https://github.com/user-attachments/assets/830d0527-4c4e-4c5d-b40f-36713fe700f3)
+
 
 # Getting Started for Dev
 
@@ -39,4 +47,6 @@ The project sources are structured like this.
 * lib/pages : contains the different screens of the application
 
 ## Class diagram of data structure
+![image](https://github.com/user-attachments/assets/3b8f39eb-1825-44dc-8685-ec1b2ffa8e25)
+
 
