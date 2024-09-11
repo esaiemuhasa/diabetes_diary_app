@@ -42,10 +42,29 @@ class IdentifiableEntityRepository <T> {
 
           db.execute("INSERT INTO bread_config(name, carbohydrate_per_serving) VALUES('Ripe banana', 5)");
           db.execute("INSERT INTO bread_config(name, carbohydrate_per_serving) VALUES('Salad', 2)");
-          db.execute("INSERT INTO bread_config(name, carbohydrate_per_serving) VALUES('Bread', 2)");
-          db.execute("INSERT INTO bread_config(name, carbohydrate_per_serving) VALUES('Milk', 10)");
+          db.execute("INSERT INTO bread_config(name, carbohydrate_per_serving) VALUES('Bread', 3)");
+          db.execute("INSERT INTO bread_config(name, carbohydrate_per_serving) VALUES('Milk', 8)");
+
+          db.execute("INSERT INTO bread_unit(serving, bread_id, day_date) VALUES(5, 1, '09/08/2024 at 06:24 AM')");
+          db.execute("INSERT INTO bread_unit(serving, bread_id, day_date) VALUES(3, 2, '09/08/2024 at 02:24 PM')");
+          db.execute("INSERT INTO bread_unit(serving, bread_id, day_date) VALUES(4, 3, '09/09/2024 at 06:24 AM')");
+          db.execute("INSERT INTO bread_unit(serving, bread_id, day_date) VALUES(2, 1, '9/10/2024 at 06:24 AM')");
+          db.execute("INSERT INTO bread_unit(serving, bread_id, day_date) VALUES(4, 4, '9/11/2024 at 06:24 AM')");
+
+          db.execute("INSERT INTO glucose(taken_value, day_date) VALUES(90, '09/08/2024 at 06:24 AM')");
+          db.execute("INSERT INTO glucose(taken_value, day_date) VALUES(120, '09/08/2024 at 02:24 PM')");
+          db.execute("INSERT INTO glucose(taken_value, day_date) VALUES(253, '09/09/2024 at 06:24 AM')");
+          db.execute("INSERT INTO glucose(taken_value, day_date) VALUES(195, '9/10/2024 at 06:24 AM')");
+          db.execute("INSERT INTO glucose(taken_value, day_date) VALUES(240, '9/11/2024 at 06:24 AM')");
+
+          db.execute("INSERT INTO insulin(injected_quantity, day_date, type_id) VALUES(20, '09/08/2024 at 06:24 AM', 1)");
+          db.execute("INSERT INTO insulin(injected_quantity, day_date, type_id) VALUES(30, '09/08/2024 at 02:24 PM', 3)");
+          db.execute("INSERT INTO insulin(injected_quantity, day_date, type_id) VALUES(30, '09/09/2024 at 06:24 AM', 1)");
+          db.execute("INSERT INTO insulin(injected_quantity, day_date, type_id) VALUES(30, '09/10/2024 at 06:24 AM', 4)");
+          db.execute("INSERT INTO insulin(injected_quantity, day_date, type_id) VALUES(30, '09/11/2024 at 06:24 AM', 2)");
+          db.execute("INSERT INTO insulin(injected_quantity, day_date, type_id) VALUES(30, '09/11/2024 at 06:24 PM', 1)");
         },
-        version: 2
+        version: 1
     );
   }
 

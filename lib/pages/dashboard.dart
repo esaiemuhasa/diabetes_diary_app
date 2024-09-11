@@ -119,7 +119,7 @@ class _LineChartContainerState extends State<LineChartContainer> {
           lineBarsData: [
             LineChartBarData(
               isCurved: true,
-              curveSmoothness: 0,
+              curveSmoothness: 0.4,
               color: const Color(0xFF50E4FF),
               barWidth: 2,
               isStrokeCapRound: true,
@@ -226,7 +226,7 @@ class _LineChartContainerState extends State<LineChartContainer> {
       400 => '400',
       450 => '450',
       500 => '500',
-      _ => '$value',
+      _ =>  "${value.toInt()}",
     };
 
     return Text(
